@@ -1,0 +1,17 @@
+.nav {
+  position: sticky; top: 0; backdrop-filter: saturate(180%) blur(8px);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.75rem 1rem; border-bottom: 1px solid var(--border);
+  background: color-mix(in oklab, var(--bg), transparent 10%);
+  z-index: 10;
+}
+.brand { font-weight: 800; }
+.links { display: flex; gap: 1rem; }
+.links a {
+  color: var(--text);
+  text-decoration: none;
+  padding: 0.25rem 0.375rem;
+  border-radius: 6px;
+}
+.links a:hover { background: color-mix(in oklab, var(--bg), white 6%); }
+.links a.active { outline: 2px solid var(--accent); }
