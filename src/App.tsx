@@ -541,7 +541,7 @@ export default function App() {
   }
 
   return (
-  <div className="mx-auto max-w-6xl p-4 pb-28 md:pb-10 md:p-8">
+  <div className="mx-auto max-w-7xl p-4 pb-24 md:pb-10 md:px-5 md:py-8">
       <div className="flex items-center justify-between mb-2">
         <h1 className="text-2xl md:text-3xl font-semibold">Trinkgeld-Verteiler</h1>
         <div className="flex items-center gap-2">
@@ -617,7 +617,7 @@ export default function App() {
       </div>
       <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">Verteilt Trinkgeld zwischen Stammpersonal (proportional zu Anteilen) und Aushilfen (proportional zu Stunden). Automatische Anpassung des Splits, falls Aushilfen über 0,5× eines vollen Stamm-Anteils kämen.</p>
 
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
         {/* Left column – Inputs */}
         <div className="space-y-5">
           <div className="bg-white dark:bg-gray-900 rounded-2xl shadow p-4 border border-gray-200/70 dark:border-gray-800">
@@ -829,43 +829,43 @@ export default function App() {
   <div className="space-y-6 md:pl-6 md:border-l md:border-gray-200 dark:md:border-gray-800">
 
           <div className="grid grid-cols-1 gap-4">
-            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow p-4 border border-gray-200/70 dark:border-gray-800 overflow-x-auto">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow p-3 md:p-4 border border-gray-200/70 dark:border-gray-800 overflow-x-auto">
               <h3 className="text-lg font-medium mb-3">Stammpersonal – Auszahlungen</h3>
-              <table className="w-full table-auto text-[13px] md:text-[12px] lg:text-[11px] leading-tight">
+              <table className="w-full table-auto text-[13px] md:text-[13px] lg:text-[13px] leading-tight">
                 <thead>
                   <tr className="text-left text-gray-600">
-                    <th className="py-0.5 px-1 break-words">Name</th>
-                    <th className="py-0.5 px-1 text-right">Betrag</th>
-                    <th className="py-0.5 px-1 text-right">% Gruppe</th>
+                    <th className="py-0.5 px-1.5 break-words">Name</th>
+                    <th className="py-0.5 px-1.5 text-right">Betrag</th>
+                    <th className="py-0.5 px-1.5 text-right">% Gruppe</th>
                   </tr>
                 </thead>
                 <tbody>
                   {results.staffRows.map(r => (
                     <tr key={r.id} className="border-t">
-                      <td className="py-0.5 px-1 break-words">{r.name || '—'}</td>
-                      <td className="py-0.5 px-1 text-right whitespace-nowrap">{formatMoney(r.amount)}</td>
-                      <td className="py-0.5 px-1 text-right whitespace-nowrap">{(r.percentOfGroup*100).toFixed(1)}%</td>
+                      <td className="py-0.5 px-1.5 break-words">{r.name || '—'}</td>
+                      <td className="py-0.5 px-1.5 text-right whitespace-nowrap">{formatMoney(r.amount)}</td>
+                      <td className="py-0.5 px-1.5 text-right whitespace-nowrap">{(r.percentOfGroup*100).toFixed(1)}%</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow p-4 border border-gray-200/70 dark:border-gray-800 overflow-x-auto">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow p-3 md:p-4 border border-gray-200/70 dark:border-gray-800 overflow-x-auto">
               <h3 className="text-lg font-medium mb-3">Aushilfen – Auszahlungen</h3>
-              <table className="w-full table-auto text-[13px] md:text-[12px] lg:text-[11px] leading-tight">
+              <table className="w-full table-auto text-[13px] md:text-[13px] lg:text-[13px] leading-tight">
                 <thead>
                   <tr className="text-left text-gray-600">
-                    <th className="py-0.5 px-1 break-words">Name</th>
-                    <th className="py-0.5 px-1 text-right">Betrag</th>
-                    <th className="py-0.5 px-1 text-right">% Gruppe</th>
+                    <th className="py-0.5 px-1.5 break-words">Name</th>
+                    <th className="py-0.5 px-1.5 text-right">Betrag</th>
+                    <th className="py-0.5 px-1.5 text-right">% Gruppe</th>
                   </tr>
                 </thead>
                 <tbody>
                   {results.helperRows.map(r => (
                     <tr key={r.id} className="border-t">
-                      <td className="py-0.5 px-1 break-words">{r.name || '—'}</td>
-                      <td className="py-0.5 px-1 text-right whitespace-nowrap">{formatMoney(r.amount)}</td>
-                      <td className="py-0.5 px-1 text-right whitespace-nowrap">{(r.percentOfGroup*100).toFixed(1)}%</td>
+                      <td className="py-0.5 px-1.5 break-words">{r.name || '—'}</td>
+                      <td className="py-0.5 px-1.5 text-right whitespace-nowrap">{formatMoney(r.amount)}</td>
+                      <td className="py-0.5 px-1.5 text-right whitespace-nowrap">{(r.percentOfGroup*100).toFixed(1)}%</td>
                     </tr>
                   ))}
                 </tbody>
