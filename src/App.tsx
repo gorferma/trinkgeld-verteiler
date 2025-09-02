@@ -247,6 +247,7 @@ type ShareState = {
 function HoldToDeleteButton({ onConfirm, title = 'Zum Löschen gedrückt halten' }: { onConfirm: () => void; title?: string }) {
   const timerRef = useRef<number | null>(null)
   const [holding, setHolding] = useState(false)
+  const activatedByHoldRef = useRef(false)
 
   const clearTimer = () => {
     if (timerRef.current != null) {
@@ -262,6 +263,7 @@ function HoldToDeleteButton({ onConfirm, title = 'Zum Löschen gedrückt halten'
     timerRef.current = window.setTimeout(() => {
       timerRef.current = null
       setHolding(false)
+  activatedByHoldRef.current = true
       onConfirm()
     }, 600)
   }
@@ -276,11 +278,13 @@ function HoldToDeleteButton({ onConfirm, title = 'Zum Löschen gedrückt halten'
       onPointerLeave={clearTimer}
       onPointerCancel={clearTimer}
       onClick={(e) => {
-        // Desktop quick click: show confirm dialog
-        if (!('ontouchstart' in window)) {
-          e.preventDefault()
-          if (window.confirm('Eintrag wirklich löschen?')) onConfirm()
+        // Prevent double-trigger if long-press already executed
+        if (activatedByHoldRef.current) {
+          activatedByHoldRef.current = false
+          return
         }
+        e.preventDefault()
+        if (window.confirm('Eintrag wirklich löschen?')) onConfirm()
       }}
       className={`inline-flex items-center justify-center h-11 w-11 rounded border ${holding ? 'border-red-400 bg-red-50' : 'border-transparent'} text-red-600 hover:border-red-300`}
     >
