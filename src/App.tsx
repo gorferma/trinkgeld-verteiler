@@ -547,8 +547,8 @@ export default function App() {
                 <div key={s.id} className="grid grid-cols-12 gap-2 items-center">
                   <input aria-label="Name" placeholder="Name" value={s.name}
                     onChange={e => setStaff(prev => prev.map(x => x.id===s.id? {...x, name: e.target.value}: x))}
-        className="col-span-6 h-11 rounded-lg border px-3 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring" />
-                  <div className="col-span-4 relative group">
+        className="col-span-6 md:col-span-5 h-11 rounded-lg border px-3 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring" />
+                  <div className="col-span-4 md:col-span-5 relative group">
                     {(() => {
                       const shareStr = staffShareInput[s.id] ?? toPercentString(s.share * 100)
                       const shareVal = Number((shareStr === '' || shareStr === '.' || shareStr === ',') ? '0' : shareStr.replace(',', '.'))
@@ -571,14 +571,14 @@ export default function App() {
                         const num = Number((committed || '0').replace(',', '.'))
                         setStaff(prev => prev.map(x => x.id===s.id? { ...x, share: Math.max(0, Math.min(1, Number.isFinite(num) ? num/100 : 0)) } : x))
                       }}
-              className={`w-full h-11 rounded-lg border pl-3 pr-24 lg:pr-28 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring ${tooHigh ? 'border-red-300 focus:outline-none focus:ring-2 focus:ring-red-400' : ''}`} />
+              className={`w-full h-11 rounded-lg border pl-3 pr-12 md:pr-16 lg:pr-20 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring ${tooHigh ? 'border-red-300 focus:outline-none focus:ring-2 focus:ring-red-400' : ''}`} />
                           {tooHigh && (
                             <p id={`share-hint-${s.id}`} className="mt-1 text-[11px] text-red-600">Max. 100 %</p>
                           )}
                         </>
                       )
                     })()}
-                    <span aria-hidden className="pointer-events-none absolute right-1 lg:right-10 top-1/2 -translate-y-1/2 text-gray-600">%</span>
+                    <span aria-hidden className="pointer-events-none absolute right-2 md:right-3 lg:right-10 top-1/2 -translate-y-1/2 text-gray-600">%</span>
                     <div className="absolute right-2 top-1/2 -translate-y-1/2 z-10 hidden lg:grid grid-rows-2 gap-0.5 lg:opacity-0 lg:group-hover:opacity-100 lg:group-focus-within:opacity-100 transition">
                       <button type="button" aria-label="+1%" title="+1%"
             className="h-11 w-11 md:h-5 md:w-5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 leading-none hover:bg-gray-50 hover:dark:bg-gray-700 text-base md:text-xs shadow-sm md:shadow-none"
@@ -644,8 +644,8 @@ export default function App() {
                 <div key={h.id} className="grid grid-cols-12 gap-2 items-center">
                   <input aria-label="Name" placeholder="Name" value={h.name}
                     onChange={e => setHelpers(prev => prev.map(x => x.id===h.id? {...x, name: e.target.value}: x))}
-                    className="col-span-6 h-11 rounded-lg border px-3 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring" />
-                  <div className="col-span-4 relative group">
+                    className="col-span-6 md:col-span-5 h-11 rounded-lg border px-3 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring" />
+                  <div className="col-span-4 md:col-span-5 relative group">
                     <input aria-label="Stunden" type="text" inputMode="decimal" value={helperHoursInput[h.id] ?? String(h.hours)}
                       onChange={e => {
                         const raw = e.target.value
@@ -660,8 +660,8 @@ export default function App() {
                         const num = Number((committed || '0').replace(',', '.'))
                         setHelpers(prev => prev.map(x => x.id===h.id? { ...x, hours: Math.max(0, Number.isFinite(num) ? num : 0) } : x))
                       }}
-                      className="w-full h-11 rounded-lg border pl-3 pr-20 lg:pr-28 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring" />
-                    <span aria-hidden className="pointer-events-none absolute right-1 md:right-2 top-1/2 -translate-y-1/2 text-gray-600">std.</span>
+                      className="w-full h-11 rounded-lg border pl-3 pr-12 md:pr-16 lg:pr-20 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring" />
+                    <span aria-hidden className="pointer-events-none absolute right-2 md:right-3 top-1/2 -translate-y-1/2 text-gray-600">std.</span>
                     <div className="absolute right-2 top-1/2 -translate-y-1/2 z-10 hidden lg:grid grid-rows-2 gap-0.5 lg:opacity-0 lg:group-hover:opacity-100 lg:group-focus-within:opacity-100 transition">
                       <button type="button" aria-label="+0,25 h" title="+0,25 h"
                         className="h-11 w-11 md:h-5 md:w-5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 leading-none hover:bg-gray-50 hover:dark:bg-gray-700 text-base md:text-xs"
