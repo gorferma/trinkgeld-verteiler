@@ -560,15 +560,15 @@ export default function App() {
                         const num = Number((committed || '0').replace(',', '.'))
                         setStaff(prev => prev.map(x => x.id===s.id? { ...x, share: Math.max(0, Math.min(1, Number.isFinite(num) ? num/100 : 0)) } : x))
                       }}
-              className={`w-full h-11 rounded-lg border pl-3 pr-36 md:pr-20 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring ${tooHigh ? 'border-red-300 focus:outline-none focus:ring-2 focus:ring-red-400' : ''}`} />
+              className={`w-full h-11 rounded-lg border pl-3 pr-12 md:pr-20 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring ${tooHigh ? 'border-red-300 focus:outline-none focus:ring-2 focus:ring-red-400' : ''}`} />
                           {tooHigh && (
                             <p id={`share-hint-${s.id}`} className="mt-1 text-[11px] text-red-600">Max. 100 %</p>
                           )}
                         </>
                       )
                     })()}
-                    <span aria-hidden className="pointer-events-none absolute right-16 md:right-10 top-1/2 -translate-y-1/2 text-gray-600">%</span>
-                    <div className="absolute right-2 top-1/2 -translate-y-1/2 z-10 grid grid-rows-2 gap-0.5 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 transition">
+                    <span aria-hidden className="pointer-events-none absolute right-3 md:right-10 top-1/2 -translate-y-1/2 text-gray-600">%</span>
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2 z-10 hidden md:grid grid-rows-2 gap-0.5 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 transition">
                       <button type="button" aria-label="+1%" title="+1%"
             className="h-11 w-11 md:h-5 md:w-5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 leading-none hover:bg-gray-50 hover:dark:bg-gray-700 text-base md:text-xs shadow-sm md:shadow-none"
                         onClick={() => {
@@ -639,9 +639,9 @@ export default function App() {
                         const num = Number((committed || '0').replace(',', '.'))
                         setHelpers(prev => prev.map(x => x.id===h.id? { ...x, hours: Math.max(0, Number.isFinite(num) ? num : 0) } : x))
                       }}
-                      className="w-full h-11 rounded-lg border pl-3 pr-36 md:pr-24 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring" />
-                    <span aria-hidden className="pointer-events-none absolute right-20 md:right-12 top-1/2 -translate-y-1/2 text-gray-600">std.</span>
-                    <div className="absolute right-2 top-1/2 -translate-y-1/2 z-10 grid grid-rows-2 gap-0.5 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 transition">
+                      className="w-full h-11 rounded-lg border pl-3 pr-12 md:pr-24 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring" />
+                    <span aria-hidden className="pointer-events-none absolute right-3 md:right-12 top-1/2 -translate-y-1/2 text-gray-600">std.</span>
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2 z-10 hidden md:grid grid-rows-2 gap-0.5 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 transition">
                       <button type="button" aria-label="+0,25 h" title="+0,25 h"
                         className="h-11 w-11 md:h-5 md:w-5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 leading-none hover:bg-gray-50 hover:dark:bg-gray-700 text-base md:text-xs"
                         onClick={() => {
