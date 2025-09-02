@@ -391,6 +391,13 @@ export default function App() {
 
   // Mobile summary sheet state
   const [mobileSummaryOpen, setMobileSummaryOpen] = useState(false)
+  useEffect(() => {
+    try {
+      if (typeof window !== 'undefined' && window.matchMedia && !window.matchMedia('(min-width: 768px)').matches) {
+        setMobileSummaryOpen(true)
+      }
+    } catch {}
+  }, [])
   // Collapsible info box state
   const [infoOpen, setInfoOpen] = useState(false)
   // One-time fractional hours hint dismissal (persisted)
