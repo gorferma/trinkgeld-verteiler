@@ -356,6 +356,11 @@ export default function App() {
   }
 
   async function copyShareLink() {
+    // Guard: if there is staff, require at least one with 100%
+    if (staff.length > 0 && !staff.some(s => Number.isFinite(s.share) && s.share >= 1)) {
+      window.alert('Bitte mindestens einer Person im Stammpersonal 100% (1,0) geben, bevor der Link geteilt wird.')
+      return
+    }
     const link = buildShareUrl()
     // Prefer native share if available
     if (navigator.share) {
@@ -524,7 +529,7 @@ export default function App() {
             )}
           </div>
 
-      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow p-4 border border-gray-200/70 dark:border-gray-800">
+  <div className={`bg-white dark:bg-gray-900 rounded-2xl shadow p-4 border ${staff.length>0 && !staff.some(s => Number.isFinite(s.share) && s.share>=1) ? 'border-red-300' : 'border-gray-200/70 dark:border-gray-800'}`}>
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 text-gray-600"><path d="M7 7a3 3 0 116 0 3 3 0 01-6 0zm8-1a2 2 0 114 0 2 2 0 01-4 0zM5 14a4 4 0 118 0v1H5v-1zm10-1h4a3 3 0 013 3v1h-7v-1a4 4 0 00-3-3z"/></svg>
@@ -532,7 +537,7 @@ export default function App() {
               </div>
               <button onClick={addStaff} className="inline-flex items-center justify-center h-11 px-3 rounded-lg bg-emerald-600 text-white">+ Hinzufügen</button>
             </div>
-      <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Anteile in %, 0–100 je Person (Summe beliebig)</p>
+  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Anteile in %, 0–100 je Person (Summe beliebig). Hinweis: Wenn Stammpersonal vorhanden ist, muss mindestens eine Person 100% (1,0) haben.</p>
             <div className="space-y-2">
               {staff.map(s => (
                 <div key={s.id} className="grid grid-cols-12 gap-2 items-center">
@@ -599,6 +604,9 @@ export default function App() {
                 </div>
               ))}
             </div>
+            {staff.length>0 && !staff.some(s => Number.isFinite(s.share) && s.share>=1) && (
+              <p className="mt-2 text-xs text-red-600">Regel: Mindestens eine Stamm-Person muss 100% (1,0) haben.</p>
+            )}
           </div>
 
           <div className="bg-white dark:bg-gray-900 rounded-2xl shadow p-4 border border-gray-200/70 dark:border-gray-800">
@@ -765,9 +773,7 @@ export default function App() {
             </div>
           </div>
 
-          <footer className="text-xs text-gray-500 dark:text-gray-400">
-            Hinweis: Referenz „voller Stamm‑Anteil (1,0)“ ist ggf. hypothetisch.
-          </footer>
+          {/* Footer note removed: full share must exist if any staff */}
 
           <div className="bg-white dark:bg-gray-900 rounded-2xl shadow p-4 border border-gray-200/70 dark:border-gray-800">
             <h3 className="text-lg font-medium mb-2">Begründung</h3>
