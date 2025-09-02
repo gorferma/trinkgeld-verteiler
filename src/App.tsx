@@ -839,8 +839,8 @@ export default function App() {
 
       {/* Mobile sticky summary sheet */}
   <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 pb-safe">
-        <div className="mx-auto max-w-6xl">
-      <div className="m-3 rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+        <div className="mx-auto max-w-6xl px-4">
+      <div className="rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
             <button
               className="w-full flex items-center justify-between px-4 py-3 text-left"
               onClick={() => setMobileSummaryOpen(v => !v)}
