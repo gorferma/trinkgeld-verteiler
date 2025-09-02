@@ -830,20 +830,20 @@ export default function App() {
           <div className="grid lg:grid-cols-2 gap-6">
             <div className="bg-white dark:bg-gray-900 rounded-2xl shadow p-4 border border-gray-200/70 dark:border-gray-800 overflow-x-auto">
               <h3 className="text-lg font-medium mb-3">Stammpersonal – Auszahlungen</h3>
-              <table className="w-full text-sm table-fixed">
+              <table className="w-full text-sm table-fixed min-w-[28rem] md:min-w-[32rem] lg:min-w-[36rem]">
                 <thead>
                   <tr className="text-left text-gray-600">
-                    <th className="py-1 w-1/2 break-words">Name</th>
-                    <th className="py-1 w-1/4">Betrag</th>
-                    <th className="py-1 w-1/4">% Gruppe</th>
+                    <th className="py-1 px-2 w-1/2 break-words">Name</th>
+                    <th className="py-1 px-2 w-1/4 text-right">Betrag</th>
+                    <th className="py-1 px-2 w-1/4 text-right">% Gruppe</th>
                   </tr>
                 </thead>
                 <tbody>
                   {results.staffRows.map(r => (
                     <tr key={r.id} className="border-t">
-                      <td className="py-1 break-words">{r.name || '—'}</td>
-                      <td className="py-1">{formatMoney(r.amount)}</td>
-                      <td className="py-1">{(r.percentOfGroup*100).toFixed(1)}%</td>
+                      <td className="py-1 px-2 break-words">{r.name || '—'}</td>
+                      <td className="py-1 px-2 text-right">{formatMoney(r.amount)}</td>
+                      <td className="py-1 px-2 text-right">{(r.percentOfGroup*100).toFixed(1)}%</td>
                     </tr>
                   ))}
                 </tbody>
@@ -851,20 +851,20 @@ export default function App() {
             </div>
             <div className="bg-white dark:bg-gray-900 rounded-2xl shadow p-4 border border-gray-200/70 dark:border-gray-800 overflow-x-auto">
               <h3 className="text-lg font-medium mb-3">Aushilfen – Auszahlungen</h3>
-              <table className="w-full text-sm table-fixed">
+              <table className="w-full text-sm table-fixed min-w-[28rem] md:min-w-[32rem] lg:min-w-[36rem]">
                 <thead>
                   <tr className="text-left text-gray-600">
-                    <th className="py-1 w-1/2 break-words">Name</th>
-                    <th className="py-1 w-1/4">Betrag</th>
-                    <th className="py-1 w-1/4">% Gruppe</th>
+                    <th className="py-1 px-2 w-1/2 break-words">Name</th>
+                    <th className="py-1 px-2 w-1/4 text-right">Betrag</th>
+                    <th className="py-1 px-2 w-1/4 text-right">% Gruppe</th>
                   </tr>
                 </thead>
                 <tbody>
                   {results.helperRows.map(r => (
                     <tr key={r.id} className="border-t">
-                      <td className="py-1 break-words">{r.name || '—'}</td>
-                      <td className="py-1">{formatMoney(r.amount)}</td>
-                      <td className="py-1">{(r.percentOfGroup*100).toFixed(1)}%</td>
+                      <td className="py-1 px-2 break-words">{r.name || '—'}</td>
+                      <td className="py-1 px-2 text-right">{formatMoney(r.amount)}</td>
+                      <td className="py-1 px-2 text-right">{(r.percentOfGroup*100).toFixed(1)}%</td>
                     </tr>
                   ))}
                 </tbody>
