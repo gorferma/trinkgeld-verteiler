@@ -309,15 +309,22 @@ export default function App() {
 
   async function copyShareLink() {
     const link = buildShareUrl()
+    // Prefer native share if available
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'Trinkgeld-Verteiler', url: link })
+        return
+      } catch {
+        // fall back to clipboard if user cancels or share fails
+      }
+    }
     try {
       await navigator.clipboard.writeText(link)
       setShareCopied(true)
       window.setTimeout(() => setShareCopied(false), 1500)
     } catch {
-      // fallback: show prompt
       window.prompt('Link kopieren:', link)
     }
-    // reflect in address bar
     try { window.history.replaceState({}, '', link) } catch {}
   }
 
@@ -513,7 +520,7 @@ export default function App() {
                       )
                     })()}
                     <span aria-hidden className="pointer-events-none absolute right-10 top-1/2 -translate-y-1/2 text-gray-600">%</span>
-                    <div className="absolute right-2 top-1/2 -translate-y-1/2 grid grid-rows-2 gap-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition">
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2 grid grid-rows-2 gap-0.5 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 transition">
                       <button type="button" aria-label="+1%" title="+1%"
             className="h-5 w-5 rounded border bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 leading-none hover:bg-gray-50 hover:dark:bg-gray-800"
                         onClick={() => {
@@ -584,7 +591,7 @@ export default function App() {
                       }}
                       className="w-full rounded-lg border pl-3 pr-24 py-2 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring" />
                     <span aria-hidden className="pointer-events-none absolute right-12 top-1/2 -translate-y-1/2 text-gray-600">std.</span>
-                    <div className="absolute right-2 top-1/2 -translate-y-1/2 grid grid-rows-2 gap-0.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition">
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2 grid grid-rows-2 gap-0.5 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 transition">
                       <button type="button" aria-label="+0,25 h" title="+0,25 h"
                         className="h-5 w-5 rounded border bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 leading-none hover:bg-gray-50 hover:dark:bg-gray-800"
                         onClick={() => {
@@ -754,7 +761,7 @@ export default function App() {
       </div>
 
       {/* Mobile sticky summary sheet */}
-    <div className="md:hidden fixed bottom-0 left-0 right-0 z-40">
+  <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 pb-safe">
         <div className="mx-auto max-w-6xl">
       <div className="m-3 rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
             <button
