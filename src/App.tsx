@@ -516,7 +516,8 @@ export default function App() {
   const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
   const isMacSafari = () => /Macintosh;.*Mac OS X/.test(navigator.userAgent) && /Safari\//.test(navigator.userAgent) && !/Chrome\//.test(navigator.userAgent)
   const isChromiumDesktop = () => /Windows|Linux|Macintosh/.test(navigator.userAgent) && (/Chrome\//.test(navigator.userAgent) || /Edg\//.test(navigator.userAgent))
-  const canShowInstall = !isStandalone && (installEvent !== null || isIOS() || isChromiumDesktop() || isMacSafari())
+  // Show install button whenever not already installed; fallbacks will guide users
+  const canShowInstall = !isStandalone
 
   async function handleInstallClick() {
     if (installEvent) {
