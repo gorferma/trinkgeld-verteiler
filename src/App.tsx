@@ -660,8 +660,8 @@ export default function App() {
                         const num = Number((committed || '0').replace(',', '.'))
                         setHelpers(prev => prev.map(x => x.id===h.id? { ...x, hours: Math.max(0, Number.isFinite(num) ? num : 0) } : x))
                       }}
-                      className="w-full h-11 rounded-lg border pl-3 pr-12 lg:pr-24 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring" />
-                    <span aria-hidden className="pointer-events-none absolute right-3 md:right-12 top-1/2 -translate-y-1/2 text-gray-600">std.</span>
+                      className="w-full h-11 rounded-lg border pl-3 pr-16 lg:pr-24 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring" />
+                    <span aria-hidden className="pointer-events-none absolute right-3 md:right-6 top-1/2 -translate-y-1/2 text-gray-600">std.</span>
                     <div className="absolute right-2 top-1/2 -translate-y-1/2 z-10 hidden lg:grid grid-rows-2 gap-0.5 lg:opacity-0 lg:group-hover:opacity-100 lg:group-focus-within:opacity-100 transition">
                       <button type="button" aria-label="+0,25 h" title="+0,25 h"
                         className="h-11 w-11 md:h-5 md:w-5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 leading-none hover:bg-gray-50 hover:dark:bg-gray-700 text-base md:text-xs"
