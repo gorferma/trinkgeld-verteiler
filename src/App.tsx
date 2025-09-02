@@ -15,6 +15,12 @@ type Results = {
   explanation: string
 }
 
+// Minimal typings for the PWA install prompt
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>
+}
+
 const uid = () => Math.random().toString(36).slice(2, 9)
 
 const defaultStaff: Staff[] = [
@@ -477,11 +483,84 @@ export default function App() {
   }
   const removeHelper = (id: string) => setHelpers(h => h.filter(x => x.id !== id))
 
+  // PWA install button state
+  const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null)
+  const [isStandalone, setIsStandalone] = useState<boolean>(false)
+  const [showIosHelp, setShowIosHelp] = useState(false)
+
+  useEffect(() => {
+    const onBip = (e: Event) => {
+      e.preventDefault()
+      setInstallEvent(e as BeforeInstallPromptEvent)
+    }
+    window.addEventListener('beforeinstallprompt', onBip as any)
+    const mq = window.matchMedia('(display-mode: standalone)')
+    const updateStandalone = () => setIsStandalone(mq.matches || (navigator as any).standalone === true)
+    updateStandalone()
+    mq.addEventListener?.('change', updateStandalone)
+    const onInstalled = () => setIsStandalone(true)
+    window.addEventListener('appinstalled', onInstalled)
+    return () => {
+      window.removeEventListener('beforeinstallprompt', onBip as any)
+      mq.removeEventListener?.('change', updateStandalone)
+      window.removeEventListener('appinstalled', onInstalled)
+    }
+  }, [])
+
+  const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
+  const canShowInstall = !isStandalone && (installEvent !== null || isIOS())
+
+  async function handleInstallClick() {
+    if (installEvent) {
+      try {
+        await installEvent.prompt()
+        const choice = await installEvent.userChoice
+        if (choice.outcome === 'accepted') {
+          setInstallEvent(null)
+        }
+      } catch {/* ignore */}
+      return
+    }
+    // iOS: show help bubble
+    if (isIOS()) {
+      setShowIosHelp(v => !v)
+    }
+  }
+
   return (
   <div className="mx-auto max-w-6xl p-4 pb-28 md:pb-10 md:p-8">
       <div className="flex items-center justify-between mb-2">
         <h1 className="text-2xl md:text-3xl font-semibold">Trinkgeld-Verteiler</h1>
         <div className="flex items-center gap-2">
+          {canShowInstall && (
+            <div className="relative">
+              <button
+                type="button"
+                onClick={handleInstallClick}
+                className="inline-flex items-center gap-1 rounded-md border px-2.5 py-1.5 text-sm bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 hover:dark:bg-gray-800 focus-ring"
+                title="App installieren (Offline & Icon)"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
+                  <path d="M12 3a1 1 0 011 1v8.586l2.293-2.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4A1 1 0 119.707 10.293L12 12.586V4a1 1 0 011-1zM5 15a1 1 0 011 1v2h12v-2a1 1 0 112 0v3a2 2 0 01-2 2H6a2 2 0 01-2-2v-3a1 1 0 011-1z"/>
+                </svg>
+                <span>App installieren</span>
+              </button>
+              {showIosHelp && isIOS() && (
+                <div className="absolute right-0 mt-1 w-64 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs p-3 shadow z-50">
+                  <div className="font-medium mb-1">Zum Home-Bildschirm hinzufügen</div>
+                  <ol className="list-decimal ml-4 space-y-1 text-gray-700 dark:text-gray-200">
+                    <li>Teilen-Symbol antippen</li>
+                    <li>„Zum Home-Bildschirm“ wählen</li>
+                    <li>Bestätigen</li>
+                  </ol>
+                  <button
+                    className="mt-2 text-emerald-700 dark:text-emerald-400 underline"
+                    onClick={() => setShowIosHelp(false)}
+                  >Schließen</button>
+                </div>
+              )}
+            </div>
+          )}
           <button
             type="button"
             onClick={copyShareLink}
