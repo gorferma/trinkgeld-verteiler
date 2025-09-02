@@ -5,6 +5,11 @@
 	--color-accent: var(--color-emerald-600);
 }
 
+/* Fluid root sizing: scale rem with viewport width (bounded for readability) */
+html {
+	font-size: clamp(14px, 0.9vw + 10px, 18px);
+}
+
 /* Force dark: utilities to use the .dark class on an ancestor instead of OS preference */
 @custom-variant dark (&:where(.dark &));
 

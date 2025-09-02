@@ -634,7 +634,7 @@ export default function App() {
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 text-gray-500">
                   <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm.75 5.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM11 10h1a1 1 0 011 1v5a1 1 0 11-2 0v-4h-.25a1 1 0 110-2H11z"/>
                 </svg>
-                <span className={`${fractionalInfoOpen ? 'opacity-100' : 'opacity-0'} absolute bottom-full mb-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-gray-800 text-white text-[10px] px-2 py-1 group-hover:opacity-100 pointer-events-none shadow`}>
+                <span className={`${fractionalInfoOpen ? 'opacity-100' : 'opacity-0'} absolute bottom-full mb-1 left-1/2 -translate-x-1/2 whitespace-normal break-words rounded bg-gray-800 text-white text-[11px] px-3 py-2 group-hover:opacity-100 pointer-events-none shadow z-50 max-w-[90vw] md:max-w-[20rem] text-center md:text-left`}>
                   Bruchteilstunden erlaubt (z. B. 3,25). Verteilung proportional; Rundung auf Cent.
                 </span>
               </button>
@@ -724,7 +724,7 @@ export default function App() {
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 text-gray-500">
                   <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm.75 5.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM11 10h1a1 1 0 011 1v5a1 1 0 11-2 0v-4h-.25a1 1 0 110-2H11z"/>
                 </svg>
-                <span className={`${splitInfoOpen ? 'opacity-100' : 'opacity-0'} absolute bottom-full mb-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-gray-800 text-white text-[10px] px-2 py-1 group-hover:opacity-100 pointer-events-none shadow max-w-[18rem] text-center`}>
+                <span className={`${splitInfoOpen ? 'opacity-100' : 'opacity-0'} absolute bottom-full mb-1 left-1/2 -translate-x-1/2 whitespace-normal break-words rounded bg-gray-800 text-white text-[11px] px-3 py-2 group-hover:opacity-100 pointer-events-none shadow z-50 max-w-[90vw] md:max-w-[22rem] text-center md:text-left`}>
                   Schutzregel: Die bestbezahlte Aushilfe darf höchstens die Hälfte eines vollen Stamm‑Anteils erhalten.
                 </span>
               </button>
