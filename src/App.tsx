@@ -707,30 +707,8 @@ export default function App() {
           </div>
         </div>
 
-        {/* Right column – Summary (sticky) + explanation + results */}
+    {/* Right column – results + summary + explanation */}
   <div className="space-y-6 md:pl-6 md:border-l md:border-gray-200 dark:md:border-gray-800">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow p-4 sticky top-4 self-start border border-gray-200/70 dark:border-gray-800">
-            <h3 className="text-lg font-medium mb-2">Zusammenfassung</h3>
-            <div className="text-2xl font-semibold flex items-center gap-2">
-              <span>{(results.appliedStaffPct*100).toFixed(1)}% Stamm / {(results.appliedHelperPct*100).toFixed(1)}% Aushilfen</span>
-              <button
-                type="button"
-                className="relative inline-flex items-center group align-middle"
-                aria-label="Info zum Split"
-                aria-expanded={splitInfoOpen}
-                onClick={() => setSplitInfoOpen(v => !v)}
-                onBlur={() => setSplitInfoOpen(false)}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 text-gray-500">
-                  <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm.75 5.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM11 10h1a1 1 0 011 1v5a1 1 0 11-2 0v-4h-.25a1 1 0 110-2H11z"/>
-                </svg>
-                <span className={`${splitInfoOpen ? 'opacity-100' : 'opacity-0'} absolute bottom-full mb-1 left-1/2 -translate-x-1/2 whitespace-normal break-words rounded bg-gray-800 text-white text-[11px] px-3 py-2 group-hover:opacity-100 pointer-events-none shadow z-50 max-w-[90vw] md:max-w-[22rem] text-center md:text-left`}>
-                  Schutzregel: Die bestbezahlte Aushilfe darf höchstens die Hälfte eines vollen Stamm‑Anteils erhalten.
-                </span>
-              </button>
-            </div>
-            <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">Gesamt: <strong>{formatMoney(total)}</strong><br/>Stamm-Topf: <strong>{formatMoney(results.staffPot)}</strong> · Aushilfen-Topf: <strong>{formatMoney(results.helperPot)}</strong></p>
-          </div>
 
           <div className="grid lg:grid-cols-2 gap-6">
             <div className="bg-white dark:bg-gray-900 rounded-2xl shadow p-4 border border-gray-200/70 dark:border-gray-800 overflow-x-auto">
@@ -775,6 +753,30 @@ export default function App() {
                 </tbody>
               </table>
             </div>
+          </div>
+
+          {/* Summary moved below payout cards */}
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow p-4 border border-gray-200/70 dark:border-gray-800">
+            <h3 className="text-lg font-medium mb-2">Zusammenfassung</h3>
+            <div className="text-2xl font-semibold flex items-center gap-2">
+              <span>{(results.appliedStaffPct*100).toFixed(1)}% Stamm / {(results.appliedHelperPct*100).toFixed(1)}% Aushilfen</span>
+              <button
+                type="button"
+                className="relative inline-flex items-center group align-middle"
+                aria-label="Info zum Split"
+                aria-expanded={splitInfoOpen}
+                onClick={() => setSplitInfoOpen(v => !v)}
+                onBlur={() => setSplitInfoOpen(false)}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 text-gray-500">
+                  <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm.75 5.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM11 10h1a1 1 0 011 1v5a1 1 0 11-2 0v-4h-.25a1 1 0 110-2H11z"/>
+                </svg>
+                <span className={`${splitInfoOpen ? 'opacity-100' : 'opacity-0'} absolute bottom-full mb-1 left-1/2 -translate-x-1/2 whitespace-normal break-words rounded bg-gray-800 text-white text-[11px] px-3 py-2 group-hover:opacity-100 pointer-events-none shadow z-50 max-w-[90vw] md:max-w-[22rem] text-center md:text-left`}>
+                  Schutzregel: Die bestbezahlte Aushilfe darf höchstens die Hälfte eines vollen Stamm‑Anteils erhalten.
+                </span>
+              </button>
+            </div>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">Gesamt: <strong>{formatMoney(total)}</strong><br/>Stamm-Topf: <strong>{formatMoney(results.staffPot)}</strong> · Aushilfen-Topf: <strong>{formatMoney(results.helperPot)}</strong></p>
           </div>
 
           {/* Footer note removed: full share must exist if any staff */}
