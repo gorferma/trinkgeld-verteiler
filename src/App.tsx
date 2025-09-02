@@ -488,6 +488,7 @@ export default function App() {
   const [isStandalone, setIsStandalone] = useState<boolean>(false)
   const [showIosHelp, setShowIosHelp] = useState(false)
   const [installNotified, setInstallNotified] = useState(false)
+  const [showDesktopHelp, setShowDesktopHelp] = useState(false)
 
   useEffect(() => {
     const onBip = (e: Event) => {
@@ -513,7 +514,9 @@ export default function App() {
   }, [])
 
   const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
-  const canShowInstall = !isStandalone && (installEvent !== null || isIOS())
+  const isMacSafari = () => /Macintosh;.*Mac OS X/.test(navigator.userAgent) && /Safari\//.test(navigator.userAgent) && !/Chrome\//.test(navigator.userAgent)
+  const isChromiumDesktop = () => /Windows|Linux|Macintosh/.test(navigator.userAgent) && (/Chrome\//.test(navigator.userAgent) || /Edg\//.test(navigator.userAgent))
+  const canShowInstall = !isStandalone && (installEvent !== null || isIOS() || isChromiumDesktop() || isMacSafari())
 
   async function handleInstallClick() {
     if (installEvent) {
@@ -528,10 +531,12 @@ export default function App() {
       } catch {/* ignore */}
       return
     }
-    // iOS: show help bubble
+    // Guidance per platform when no prompt available
     if (isIOS()) {
       setShowIosHelp(v => !v)
+      return
     }
+    setShowDesktopHelp(v => !v)
   }
 
   return (
@@ -552,6 +557,31 @@ export default function App() {
                 </svg>
                 <span>App installieren</span>
               </button>
+              {showDesktopHelp && !isIOS() && (
+                <div className="absolute right-0 mt-1 w-72 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs p-3 shadow z-50">
+                  <div className="font-medium mb-1">Auf Desktop installieren</div>
+                  {isChromiumDesktop() && (
+                    <ol className="list-decimal ml-4 space-y-1 text-gray-700 dark:text-gray-200">
+                      <li>In der Adressleiste auf das Installations‑Symbol klicken</li>
+                      <li>„Installieren“ bestätigen</li>
+                    </ol>
+                  )}
+                  {isMacSafari() && (
+                    <ol className="list-decimal ml-4 space-y-1 text-gray-700 dark:text-gray-200">
+                      <li>Menü „Ablage“ öffnen</li>
+                      <li>„Zum Dock hinzufügen…“ wählen</li>
+                      <li>Bestätigen</li>
+                    </ol>
+                  )}
+                  {!isChromiumDesktop() && !isMacSafari() && (
+                    <div className="text-gray-700 dark:text-gray-200">Dein Browser unterstützt evtl. keine PWA‑Installation. Nutze Chrome/Edge (Windows/Linux/macOS) oder Safari (macOS).</div>
+                  )}
+                  <button
+                    className="mt-2 text-emerald-700 dark:text-emerald-400 underline"
+                    onClick={() => setShowDesktopHelp(false)}
+                  >Schließen</button>
+                </div>
+              )}
               {showIosHelp && isIOS() && (
                 <div className="absolute right-0 mt-1 w-64 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-xs p-3 shadow z-50">
                   <div className="font-medium mb-1">Zum Home-Bildschirm hinzufügen</div>
