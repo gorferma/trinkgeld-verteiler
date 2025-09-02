@@ -1,1 +1,13 @@
 @import "tailwindcss";
+
+/* Accessible focus rings (AA+), consistent accent */
+@theme {
+	--color-accent: var(--color-emerald-600);
+}
+
+/* Force dark: utilities to use the .dark class on an ancestor instead of OS preference */
+@custom-variant dark (&:where(.dark &));
+
+@utility focus-ring {
+	@apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[color:var(--color-accent)] focus:ring-offset-white dark:focus:ring-offset-gray-900;
+}
