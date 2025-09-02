@@ -380,7 +380,6 @@ export default function App() {
   // Info tooltip toggles (mobile tap support)
   const [splitInfoOpen, setSplitInfoOpen] = useState(false)
   const [fractionalInfoOpen, setFractionalInfoOpen] = useState(false)
-  const [mobileSplitInfoOpen, setMobileSplitInfoOpen] = useState(false)
 
   // string inputs for shares/hours to control formatting (strip leading zeros)
   const [staffShareInput, setStaffShareInput] = useState<Record<string, string>>(() =>
@@ -393,15 +392,7 @@ export default function App() {
     Object.fromEntries((localStorage.getItem('tg_helpers') ? JSON.parse(localStorage.getItem('tg_helpers')!) : defaultHelpers).map((h: Helper) => [h.id, String(h.hours)]))
   )
 
-  // Mobile summary sheet state
-  const [mobileSummaryOpen, setMobileSummaryOpen] = useState(false)
-  useEffect(() => {
-    try {
-      if (typeof window !== 'undefined' && window.matchMedia && !window.matchMedia('(min-width: 768px)').matches) {
-        setMobileSummaryOpen(true)
-      }
-    } catch {}
-  }, [])
+  // Mobile summary sheet removed
   // Collapsible info box state
   const [infoOpen, setInfoOpen] = useState(false)
   // One-time fractional hours hint dismissal (persisted)
@@ -831,47 +822,6 @@ export default function App() {
                   <strong>Transparenz in der App:</strong><br/>
                   Wir zeigen immer den angewandten Split (z. B. „86,4 % / 13,6 %“) und – falls angepasst – wer den Schutz ausgelöst hat (Name der Aushilfe), wieviel drüber es bei 80/20 gewesen wäre und warum wir verschoben haben.
                 </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile sticky summary sheet */}
-  <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 pb-safe">
-        <div className="mx-auto max-w-6xl px-4">
-      <div className="rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-            <button
-              className="w-full flex items-center justify-between px-4 py-3 text-left"
-              onClick={() => setMobileSummaryOpen(v => !v)}
-              aria-expanded={mobileSummaryOpen}
-              aria-controls="mobile-summary-content"
-            >
-              <span className="font-medium">Zusammenfassung</span>
-        <span className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-1">
-                <span>{(results.appliedStaffPct*100).toFixed(0)}% / {(results.appliedHelperPct*100).toFixed(0)}%</span>
-                <button
-                  type="button"
-                  className="relative inline-flex items-center group"
-                  aria-label="Info zum Split"
-                  aria-expanded={mobileSplitInfoOpen}
-                  onClick={() => setMobileSplitInfoOpen(v => !v)}
-                  onBlur={() => setMobileSplitInfoOpen(false)}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 text-gray-500">
-                    <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm.75 5.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM11 10h1a1 1 0 011 1v5a1 1 0 11-2 0v-4h-.25a1 1 0 110-2H11z"/>
-                  </svg>
-                  <span className={`${mobileSplitInfoOpen ? 'opacity-100' : 'opacity-0'} absolute bottom-full mb-1 right-0 whitespace-nowrap rounded bg-gray-800 text-white text-[10px] px-2 py-1 group-hover:opacity-100 pointer-events-none shadow max-w-[15rem] text-right`}>
-                    Schutzregel: Die bestbezahlte Aushilfe darf höchstens die Hälfte eines vollen Stamm‑Anteils erhalten.
-                  </span>
-                </button>
-              </span>
-            </button>
-            <div id="mobile-summary-content" className={`${mobileSummaryOpen ? 'block' : 'hidden'} px-4 pb-4`}> 
-              <div className="text-sm text-gray-700 dark:text-gray-300">
-                <div className="flex justify-between py-1"><span>Gesamt</span><strong>{formatMoney(total)}</strong></div>
-                <div className="flex justify-between py-1"><span>Stamm-Topf</span><strong>{formatMoney(results.staffPot)}</strong></div>
-                <div className="flex justify-between py-1"><span>Aushilfen-Topf</span><strong>{formatMoney(results.helperPot)}</strong></div>
               </div>
             </div>
           </div>
