@@ -377,6 +377,10 @@ export default function App() {
   }
 
   const [shareCopied, setShareCopied] = useState(false)
+  // Info tooltip toggles (mobile tap support)
+  const [splitInfoOpen, setSplitInfoOpen] = useState(false)
+  const [fractionalInfoOpen, setFractionalInfoOpen] = useState(false)
+  const [mobileSplitInfoOpen, setMobileSplitInfoOpen] = useState(false)
 
   // string inputs for shares/hours to control formatting (strip leading zeros)
   const [staffShareInput, setStaffShareInput] = useState<Record<string, string>>(() =>
@@ -616,14 +620,21 @@ export default function App() {
             </div>
             <div className="text-xs text-gray-500 dark:text-gray-400 mb-2 flex items-center gap-2">
               <span>Stunden (Dezimal erlaubt)</span>
-              <span className="relative inline-flex items-center group cursor-help" aria-label="Info zu Bruchteilstunden">
+              <button
+                type="button"
+                className="relative inline-flex items-center group"
+                aria-label="Info zu Bruchteilstunden"
+                aria-expanded={fractionalInfoOpen}
+                onClick={() => setFractionalInfoOpen(v => !v)}
+                onBlur={() => setFractionalInfoOpen(false)}
+              >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 text-gray-500">
                   <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm.75 5.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM11 10h1a1 1 0 011 1v5a1 1 0 11-2 0v-4h-.25a1 1 0 110-2H11z"/>
                 </svg>
-                <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-gray-800 text-white text-[10px] px-2 py-1 opacity-0 group-hover:opacity-100 pointer-events-none shadow">
+                <span className={`${fractionalInfoOpen ? 'opacity-100' : 'opacity-0'} absolute bottom-full mb-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-gray-800 text-white text-[10px] px-2 py-1 group-hover:opacity-100 pointer-events-none shadow`}>
                   Bruchteilstunden erlaubt (z. B. 3,25). Verteilung proportional; Rundung auf Cent.
                 </span>
-              </span>
+              </button>
             </div>
             <div className="space-y-2">
               {helpers.map(h => (
@@ -699,14 +710,21 @@ export default function App() {
             <h3 className="text-lg font-medium mb-2">Zusammenfassung</h3>
             <div className="text-2xl font-semibold flex items-center gap-2">
               <span>{(results.appliedStaffPct*100).toFixed(1)}% Stamm / {(results.appliedHelperPct*100).toFixed(1)}% Aushilfen</span>
-              <span className="relative inline-flex items-center group cursor-help align-middle" aria-label="Info zum Split">
+              <button
+                type="button"
+                className="relative inline-flex items-center group align-middle"
+                aria-label="Info zum Split"
+                aria-expanded={splitInfoOpen}
+                onClick={() => setSplitInfoOpen(v => !v)}
+                onBlur={() => setSplitInfoOpen(false)}
+              >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 text-gray-500">
                   <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm.75 5.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM11 10h1a1 1 0 011 1v5a1 1 0 11-2 0v-4h-.25a1 1 0 110-2H11z"/>
                 </svg>
-                <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-gray-800 text-white text-[10px] px-2 py-1 opacity-0 group-hover:opacity-100 pointer-events-none shadow max-w-[18rem] text-center">
+                <span className={`${splitInfoOpen ? 'opacity-100' : 'opacity-0'} absolute bottom-full mb-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-gray-800 text-white text-[10px] px-2 py-1 group-hover:opacity-100 pointer-events-none shadow max-w-[18rem] text-center`}>
                   Schutzregel: Die bestbezahlte Aushilfe darf höchstens die Hälfte eines vollen Stamm‑Anteils erhalten.
                 </span>
-              </span>
+              </button>
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">Gesamt: <strong>{formatMoney(total)}</strong><br/>Stamm-Topf: <strong>{formatMoney(results.staffPot)}</strong> · Aushilfen-Topf: <strong>{formatMoney(results.helperPot)}</strong></p>
           </div>
@@ -832,14 +850,21 @@ export default function App() {
               <span className="font-medium">Zusammenfassung</span>
         <span className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-1">
                 <span>{(results.appliedStaffPct*100).toFixed(0)}% / {(results.appliedHelperPct*100).toFixed(0)}%</span>
-                <span className="relative inline-flex items-center group cursor-help" aria-label="Info zum Split">
+                <button
+                  type="button"
+                  className="relative inline-flex items-center group"
+                  aria-label="Info zum Split"
+                  aria-expanded={mobileSplitInfoOpen}
+                  onClick={() => setMobileSplitInfoOpen(v => !v)}
+                  onBlur={() => setMobileSplitInfoOpen(false)}
+                >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 text-gray-500">
                     <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm.75 5.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM11 10h1a1 1 0 011 1v5a1 1 0 11-2 0v-4h-.25a1 1 0 110-2H11z"/>
                   </svg>
-                  <span className="absolute bottom-full mb-1 right-0 whitespace-nowrap rounded bg-gray-800 text-white text-[10px] px-2 py-1 opacity-0 group-hover:opacity-100 pointer-events-none shadow max-w-[15rem] text-right">
+                  <span className={`${mobileSplitInfoOpen ? 'opacity-100' : 'opacity-0'} absolute bottom-full mb-1 right-0 whitespace-nowrap rounded bg-gray-800 text-white text-[10px] px-2 py-1 group-hover:opacity-100 pointer-events-none shadow max-w-[15rem] text-right`}>
                     Schutzregel: Die bestbezahlte Aushilfe darf höchstens die Hälfte eines vollen Stamm‑Anteils erhalten.
                   </span>
-                </span>
+                </button>
               </span>
             </button>
             <div id="mobile-summary-content" className={`${mobileSummaryOpen ? 'block' : 'hidden'} px-4 pb-4`}> 
