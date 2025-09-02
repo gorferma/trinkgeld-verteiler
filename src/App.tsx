@@ -831,7 +831,7 @@ export default function App() {
           <div className="grid grid-cols-1 gap-4">
             <div className="bg-white dark:bg-gray-900 rounded-2xl shadow p-3 md:p-4 border border-gray-200/70 dark:border-gray-800 overflow-x-auto">
               <h3 className="text-lg font-medium mb-3">Stammpersonal – Auszahlungen</h3>
-              <table className="w-full table-auto text-[13px] md:text-[13px] lg:text-[13px] leading-tight">
+              <table className="w-full table-auto text-[13px] md:text-[13px] lg:text-[14px] xl:text-[15px] leading-tight">
                 <thead>
                   <tr className="text-left text-gray-600">
                     <th className="py-0.5 px-1.5 break-words">Name</th>
@@ -852,7 +852,7 @@ export default function App() {
             </div>
             <div className="bg-white dark:bg-gray-900 rounded-2xl shadow p-3 md:p-4 border border-gray-200/70 dark:border-gray-800 overflow-x-auto">
               <h3 className="text-lg font-medium mb-3">Aushilfen – Auszahlungen</h3>
-              <table className="w-full table-auto text-[13px] md:text-[13px] lg:text-[13px] leading-tight">
+              <table className="w-full table-auto text-[13px] md:text-[13px] lg:text-[14px] xl:text-[15px] leading-tight">
                 <thead>
                   <tr className="text-left text-gray-600">
                     <th className="py-0.5 px-1.5 break-words">Name</th>
