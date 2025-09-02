@@ -833,9 +833,9 @@ export default function App() {
               <table className="w-full text-sm table-fixed min-w-[28rem] md:min-w-[32rem] lg:min-w-[36rem]">
                 <thead>
                   <tr className="text-left text-gray-600">
-                    <th className="py-1 px-2 w-1/2 break-words">Name</th>
-                    <th className="py-1 px-2 w-1/4 text-right">Betrag</th>
-                    <th className="py-1 px-2 w-1/4 text-right">% Gruppe</th>
+                    <th className="py-1 px-2 w-[45%] break-words">Name</th>
+                    <th className="py-1 px-2 w-[35%] text-right">Betrag</th>
+                    <th className="py-1 px-2 w-[20%] text-right">% Gruppe</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -854,9 +854,9 @@ export default function App() {
               <table className="w-full text-sm table-fixed min-w-[28rem] md:min-w-[32rem] lg:min-w-[36rem]">
                 <thead>
                   <tr className="text-left text-gray-600">
-                    <th className="py-1 px-2 w-1/2 break-words">Name</th>
-                    <th className="py-1 px-2 w-1/4 text-right">Betrag</th>
-                    <th className="py-1 px-2 w-1/4 text-right">% Gruppe</th>
+                    <th className="py-1 px-2 w-[45%] break-words">Name</th>
+                    <th className="py-1 px-2 w-[35%] text-right">Betrag</th>
+                    <th className="py-1 px-2 w-[20%] text-right">% Gruppe</th>
                   </tr>
                 </thead>
                 <tbody>
