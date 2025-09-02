@@ -487,6 +487,7 @@ export default function App() {
   const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null)
   const [isStandalone, setIsStandalone] = useState<boolean>(false)
   const [showIosHelp, setShowIosHelp] = useState(false)
+  const [installNotified, setInstallNotified] = useState(false)
 
   useEffect(() => {
     const onBip = (e: Event) => {
@@ -498,7 +499,11 @@ export default function App() {
     const updateStandalone = () => setIsStandalone(mq.matches || (navigator as any).standalone === true)
     updateStandalone()
     mq.addEventListener?.('change', updateStandalone)
-    const onInstalled = () => setIsStandalone(true)
+    const onInstalled = () => {
+      setIsStandalone(true)
+      setInstallNotified(true)
+      window.setTimeout(() => setInstallNotified(false), 4000)
+    }
     window.addEventListener('appinstalled', onInstalled)
     return () => {
       window.removeEventListener('beforeinstallprompt', onBip as any)
@@ -517,6 +522,8 @@ export default function App() {
         const choice = await installEvent.userChoice
         if (choice.outcome === 'accepted') {
           setInstallEvent(null)
+          setInstallNotified(true)
+          window.setTimeout(() => setInstallNotified(false), 4000)
         }
       } catch {/* ignore */}
       return
@@ -573,6 +580,7 @@ export default function App() {
             <span>Link teilen</span>
           </button>
           {shareCopied && <span className="text-xs text-green-600">Kopiert</span>}
+          {installNotified && <span className="text-xs text-green-600">Installiert</span>}
           <DarkModeToggle />
         </div>
       </div>
