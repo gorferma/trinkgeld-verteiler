@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 type Staff = { id: string; name: string; share: number }
 type Helper = { id: string; name: string; hours: number }
@@ -243,6 +243,54 @@ type ShareState = {
   h: { n: string; u: number }[]
 }
 
+// Reusable hold-to-delete button: long-press to confirm on touch, confirm() fallback on click
+function HoldToDeleteButton({ onConfirm, title = 'Zum Löschen gedrückt halten' }: { onConfirm: () => void; title?: string }) {
+  const timerRef = useRef<number | null>(null)
+  const [holding, setHolding] = useState(false)
+
+  const clearTimer = () => {
+    if (timerRef.current != null) {
+      window.clearTimeout(timerRef.current)
+      timerRef.current = null
+    }
+    setHolding(false)
+  }
+
+  const startHold = () => {
+    if (timerRef.current != null) return
+    setHolding(true)
+    timerRef.current = window.setTimeout(() => {
+      timerRef.current = null
+      setHolding(false)
+      onConfirm()
+    }, 600)
+  }
+
+  return (
+    <button
+      type="button"
+      aria-label="Entfernen"
+      title={title}
+      onPointerDown={startHold}
+      onPointerUp={clearTimer}
+      onPointerLeave={clearTimer}
+      onPointerCancel={clearTimer}
+      onClick={(e) => {
+        // Desktop quick click: show confirm dialog
+        if (!('ontouchstart' in window)) {
+          e.preventDefault()
+          if (window.confirm('Eintrag wirklich löschen?')) onConfirm()
+        }
+      }}
+      className={`inline-flex items-center justify-center h-11 w-11 rounded border ${holding ? 'border-red-400 bg-red-50' : 'border-transparent'} text-red-600 hover:border-red-300`}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+        <path d="M9 3a1 1 0 00-1 1v1H5a1 1 0 000 2h14a1 1 0 100-2h-3V4a1 1 0 00-1-1H9zm9 6H6l1 11a2 2 0 002 2h6a2 2 0 002-2l1-11z"/>
+      </svg>
+    </button>
+  )
+}
+
 export default function App() {
   const [total, setTotal] = useState<number>(() => {
     const saved = localStorage.getItem('tg_total')
@@ -467,7 +515,7 @@ export default function App() {
                   const n = Number(s.replace(',', '.'))
                   setTotal(Number.isFinite(n) ? n : 0)
                 }}
-        className={`w-full rounded-lg border pl-7 pr-3 py-2 bg-white dark:bg-gray-900 focus-ring ${Number(total) === 0 ? 'border-red-300 focus:ring-red-400' : 'border-gray-300 dark:border-gray-700'}`} />
+  className={`w-full h-11 rounded-lg border pl-7 pr-3 bg-white dark:bg-gray-900 focus-ring ${Number(total) === 0 ? 'border-red-300 focus:ring-red-400' : 'border-gray-300 dark:border-gray-700'}`} />
             </div>
             {Number(total) === 0 && (
               <p id="total-hint" className="mt-1 text-xs text-red-600">Bitte Betrag &gt; 0 eingeben.</p>
@@ -480,7 +528,7 @@ export default function App() {
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 text-gray-600"><path d="M7 7a3 3 0 116 0 3 3 0 01-6 0zm8-1a2 2 0 114 0 2 2 0 01-4 0zM5 14a4 4 0 118 0v1H5v-1zm10-1h4a3 3 0 013 3v1h-7v-1a4 4 0 00-3-3z"/></svg>
                 <h2 className="text-lg font-medium">Stammpersonal</h2>
               </div>
-              <button onClick={addStaff} className="px-3 py-1 rounded-lg bg-emerald-600 text-white">+ Hinzufügen</button>
+              <button onClick={addStaff} className="inline-flex items-center justify-center h-11 px-3 rounded-lg bg-emerald-600 text-white">+ Hinzufügen</button>
             </div>
       <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Anteile in %, 0–100 je Person (Summe beliebig)</p>
             <div className="space-y-2">
@@ -488,7 +536,7 @@ export default function App() {
                 <div key={s.id} className="grid grid-cols-12 gap-2 items-center">
                   <input aria-label="Name" placeholder="Name" value={s.name}
                     onChange={e => setStaff(prev => prev.map(x => x.id===s.id? {...x, name: e.target.value}: x))}
-        className="col-span-6 rounded-lg border px-3 py-2 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring" />
+        className="col-span-6 h-11 rounded-lg border px-3 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring" />
                   <div className="col-span-4 relative group">
                     {(() => {
                       const shareStr = staffShareInput[s.id] ?? toPercentString(s.share * 100)
@@ -512,7 +560,7 @@ export default function App() {
                         const num = Number((committed || '0').replace(',', '.'))
                         setStaff(prev => prev.map(x => x.id===s.id? { ...x, share: Math.max(0, Math.min(1, Number.isFinite(num) ? num/100 : 0)) } : x))
                       }}
-              className={`w-full rounded-lg border pl-3 pr-20 py-2 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring ${tooHigh ? 'border-red-300 focus:outline-none focus:ring-2 focus:ring-red-400' : ''}`} />
+              className={`w-full h-11 rounded-lg border pl-3 pr-20 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring ${tooHigh ? 'border-red-300 focus:outline-none focus:ring-2 focus:ring-red-400' : ''}`} />
                           {tooHigh && (
                             <p id={`share-hint-${s.id}`} className="mt-1 text-[11px] text-red-600">Max. 100 %</p>
                           )}
@@ -522,7 +570,7 @@ export default function App() {
                     <span aria-hidden className="pointer-events-none absolute right-10 top-1/2 -translate-y-1/2 text-gray-600">%</span>
                     <div className="absolute right-2 top-1/2 -translate-y-1/2 grid grid-rows-2 gap-0.5 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 transition">
                       <button type="button" aria-label="+1%" title="+1%"
-            className="h-5 w-5 rounded border bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 leading-none hover:bg-gray-50 hover:dark:bg-gray-800"
+            className="h-11 w-11 md:h-5 md:w-5 rounded border bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 leading-none hover:bg-gray-50 hover:dark:bg-gray-800 text-base md:text-xs"
                         onClick={() => {
                           const curStr = staffShareInput[s.id] ?? toPercentString(s.share * 100)
                           const cur = Number((curStr === '' || curStr === '.' || curStr === ',') ? '0' : curStr.replace(',', '.'))
@@ -532,7 +580,7 @@ export default function App() {
                           setStaff(prev => prev.map(x => x.id===s.id? { ...x, share: Math.max(0, Math.min(1, next/100)) } : x))
                         }}>+</button>
                       <button type="button" aria-label="-1%" title="-1%"
-                        className="h-5 w-5 rounded border bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 leading-none hover:bg-gray-50 hover:dark:bg-gray-800"
+                        className="h-11 w-11 md:h-5 md:w-5 rounded border bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 leading-none hover:bg-gray-50 hover:dark:bg-gray-800 text-base md:text-xs"
                         onClick={() => {
                           const curStr = staffShareInput[s.id] ?? toPercentString(s.share * 100)
                           const cur = Number((curStr === '' || curStr === '.' || curStr === ',') ? '0' : curStr.replace(',', '.'))
@@ -543,7 +591,9 @@ export default function App() {
                         }}>−</button>
                     </div>
                   </div>
-                  <button onClick={() => removeStaff(s.id)} aria-label="Entfernen" className="col-span-2 text-red-600">Entf.</button>
+                  <div className="col-span-2 flex justify-end">
+                    <HoldToDeleteButton onConfirm={() => removeStaff(s.id)} />
+                  </div>
                 </div>
               ))}
             </div>
@@ -555,7 +605,7 @@ export default function App() {
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 text-gray-600"><path d="M12 6a3 3 0 110 6 3 3 0 010-6zm6 10a4 4 0 00-8 0v1h8v-1zM6 10a2 2 0 110-4 2 2 0 010 4zM3 17a3 3 0 013-3h1a5 5 0 00-2 4v1H3v-2z"/></svg>
                 <h2 className="text-lg font-medium">Aushilfen</h2>
               </div>
-              <button onClick={addHelper} className="px-3 py-1 rounded-lg bg-emerald-600 text-white">+ Hinzufügen</button>
+              <button onClick={addHelper} className="inline-flex items-center justify-center h-11 px-3 rounded-lg bg-emerald-600 text-white">+ Hinzufügen</button>
             </div>
             <div className="text-xs text-gray-500 dark:text-gray-400 mb-2 flex items-center gap-2">
               <span>Stunden (Dezimal erlaubt)</span>
@@ -573,7 +623,7 @@ export default function App() {
                 <div key={h.id} className="grid grid-cols-12 gap-2 items-center">
                   <input aria-label="Name" placeholder="Name" value={h.name}
                     onChange={e => setHelpers(prev => prev.map(x => x.id===h.id? {...x, name: e.target.value}: x))}
-                    className="col-span-6 rounded-lg border px-3 py-2 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring" />
+                    className="col-span-6 h-11 rounded-lg border px-3 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring" />
                   <div className="col-span-4 relative group">
                     <input aria-label="Stunden" type="text" inputMode="decimal" value={helperHoursInput[h.id] ?? String(h.hours)}
                       onChange={e => {
@@ -589,11 +639,11 @@ export default function App() {
                         const num = Number((committed || '0').replace(',', '.'))
                         setHelpers(prev => prev.map(x => x.id===h.id? { ...x, hours: Math.max(0, Number.isFinite(num) ? num : 0) } : x))
                       }}
-                      className="w-full rounded-lg border pl-3 pr-24 py-2 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring" />
+                      className="w-full h-11 rounded-lg border pl-3 pr-24 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring" />
                     <span aria-hidden className="pointer-events-none absolute right-12 top-1/2 -translate-y-1/2 text-gray-600">std.</span>
                     <div className="absolute right-2 top-1/2 -translate-y-1/2 grid grid-rows-2 gap-0.5 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100 transition">
                       <button type="button" aria-label="+0,25 h" title="+0,25 h"
-                        className="h-5 w-5 rounded border bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 leading-none hover:bg-gray-50 hover:dark:bg-gray-800"
+                        className="h-11 w-11 md:h-5 md:w-5 rounded border bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 leading-none hover:bg-gray-50 hover:dark:bg-gray-800 text-base md:text-xs"
                         onClick={() => {
                           const curStr = helperHoursInput[h.id] ?? String(h.hours)
                           const cur = Number((curStr === '' || curStr === '.' || curStr === ',') ? '0' : curStr.replace(',', '.'))
@@ -603,7 +653,7 @@ export default function App() {
                           setHelpers(prev => prev.map(x => x.id===h.id? { ...x, hours: next } : x))
                         }}>+</button>
                       <button type="button" aria-label="-0,25 h" title="-0,25 h"
-                        className="h-5 w-5 rounded border bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 leading-none hover:bg-gray-50 hover:dark:bg-gray-800"
+                        className="h-11 w-11 md:h-5 md:w-5 rounded border bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 leading-none hover:bg-gray-50 hover:dark:bg-gray-800 text-base md:text-xs"
                         onClick={() => {
                           const curStr = helperHoursInput[h.id] ?? String(h.hours)
                           const cur = Number((curStr === '' || curStr === '.' || curStr === ',') ? '0' : curStr.replace(',', '.'))
@@ -614,7 +664,9 @@ export default function App() {
                         }}>−</button>
                     </div>
                   </div>
-                  <button onClick={() => removeHelper(h.id)} aria-label="Entfernen" className="col-span-2 text-red-600">Entf.</button>
+                  <div className="col-span-2 flex justify-end">
+                    <HoldToDeleteButton onConfirm={() => removeHelper(h.id)} />
+                  </div>
                 </div>
               ))}
               {helpers.some(h => Number.isFinite(h.hours) && Math.floor(h.hours) !== h.hours) && !fractionalHintDismissed && (
