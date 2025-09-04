@@ -943,8 +943,8 @@ export default function App() {
           {/* Summary moved below payout cards */}
           <div className="bg-white dark:bg-gray-900 rounded-2xl shadow p-4 border border-gray-200/70 dark:border-gray-800">
             <h3 className="text-lg font-medium mb-2">Zusammenfassung</h3>
-            <div className="flex items-center justify-between gap-2">
-              <div className="text-2xl font-semibold flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-2">
+              <div className="text-xl sm:text-2xl font-semibold flex items-center gap-2 min-w-0">
               <span>{(results.appliedStaffPct*100).toFixed(1)}% Stamm / {(results.appliedHelperPct*100).toFixed(1)}% Aushilfen</span>
               <button
                 type="button"
@@ -964,7 +964,7 @@ export default function App() {
                 </span>
               </button>
               </div>
-              <div className="inline-flex items-center rounded-md border border-gray-300 dark:border-gray-700 overflow-hidden">
+              <div className="inline-flex items-center rounded-md border border-gray-300 dark:border-gray-700 overflow-hidden shrink-0">
                 <button
                   type="button"
                   className={`px-2.5 py-1.5 text-sm ${splitMode==='auto' ? 'bg-emerald-600 text-white' : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200'}`}
