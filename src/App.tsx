@@ -70,7 +70,12 @@ function roundGroup(values: { id: string; raw: number; name: string }[], groupTo
   return corrected.map(v => ({ id: v.id, name: v.name, amount: v.floored, percentOfGroup: v.floored / total }))
 }
 
-function computeResults(total: number, staff: Staff[], helpers: Helper[]): Results {
+function computeResults(
+  total: number,
+  staff: Staff[],
+  helpers: Helper[],
+  opts?: { manualStaffPct?: number }
+): Results {
   const sumW = staff.reduce((a, s) => a + (isFinite(s.share) ? Math.max(0, s.share) : 0), 0)
   const sumH = helpers.reduce((a, h) => a + (isFinite(h.hours) ? Math.max(0, h.hours) : 0), 0)
 
@@ -125,7 +130,32 @@ function computeResults(total: number, staff: Staff[], helpers: Helper[]): Resul
     }
   }
 
-  // Baseline 80/20 check
+  // Manual override (only when both Gruppen vorhanden)
+  const manual = opts?.manualStaffPct
+  if (sumW > 0 && sumH > 0 && typeof manual === 'number' && Number.isFinite(manual)) {
+    const p = Math.min(1, Math.max(0, manual))
+    const q = 1 - p
+    const staffPot = p * total
+    const helperPot = q * total
+
+    const staffValues = staff.map(s => ({ id: s.id, name: s.name || 'Stamm', raw: staffPot * (s.share / sumW) }))
+    const helperValues = helpers.map(h => ({ id: h.id, name: h.name || 'Aushilfe', raw: helperPot * (h.hours / sumH) }))
+
+    const staffRows = roundGroup(staffValues, staffPot)
+    const helperRows = roundGroup(helperValues, helperPot)
+
+    return {
+      appliedStaffPct: p,
+      appliedHelperPct: q,
+      staffRows,
+      helperRows,
+      staffPot: Math.round(staffRows.reduce((a, r) => a + r.amount, 0) * 100) / 100,
+      helperPot: Math.round(helperRows.reduce((a, r) => a + r.amount, 0) * 100) / 100,
+      explanation: `Manuell gewählter Split: ${(p*100).toFixed(1)}% / ${(q*100).toFixed(1)}%. Fairness‑Check nicht angewendet (nur in Auto).`,
+    }
+  }
+
+  // Baseline 80/20 check (Auto)
   const p0 = 0.8
   const S1_p0 = (p0 * total) / sumW
   const rH = (helpers.length && sumH > 0) ? Math.max(...helpers.map(h => h.hours)) / sumH : 0
@@ -323,7 +353,33 @@ export default function App() {
   useEffect(() => { localStorage.setItem('tg_staff', JSON.stringify(staff)) }, [staff])
   useEffect(() => { localStorage.setItem('tg_helpers', JSON.stringify(helpers)) }, [helpers])
 
-  const results = useMemo(() => computeResults(total, staff, helpers), [total, staff, helpers])
+  // Split mode state
+  const [splitMode, setSplitMode] = useState<'auto' | 'manual'>(() => (localStorage.getItem('tg_split_mode') === 'manual' ? 'manual' : 'auto'))
+  const [manualStaffPctInput, setManualStaffPctInput] = useState<string>(() => {
+    const saved = localStorage.getItem('tg_manual_staff_pct')
+    return saved ? saved : '80'
+  })
+  useEffect(() => { localStorage.setItem('tg_split_mode', splitMode) }, [splitMode])
+  useEffect(() => { localStorage.setItem('tg_manual_staff_pct', manualStaffPctInput) }, [manualStaffPctInput])
+
+  const manualStaffPctNum = (() => {
+    const s = manualStaffPctInput
+    const n = Number((s === '' || s === '.' || s === ',') ? '0' : s.replace(',', '.'))
+    const clamped = Math.min(100, Math.max(0, Number.isFinite(n) ? n : 0))
+    return clamped / 100
+  })()
+
+  const results = useMemo(
+    () => computeResults(total, staff, helpers, splitMode === 'manual' ? { manualStaffPct: manualStaffPctNum } : undefined),
+    [total, staff, helpers, splitMode, manualStaffPctNum]
+  )
+
+  const manualHelperPctDisplay = useMemo(() => {
+    const s = manualStaffPctInput
+    const n = Number((s === '' || s === '.' || s === ',') ? '0' : s.replace(',', '.'))
+    const helperPct = Math.max(0, Math.min(100, 100 - (Number.isFinite(n) ? n : 0)))
+    return helperPct.toLocaleString('de-DE', { useGrouping: false, maximumFractionDigits: 1 })
+  }, [manualStaffPctInput])
 
   // Load state from URL (?s=...) once on mount
   useEffect(() => {
@@ -876,7 +932,8 @@ export default function App() {
           {/* Summary moved below payout cards */}
           <div className="bg-white dark:bg-gray-900 rounded-2xl shadow p-4 border border-gray-200/70 dark:border-gray-800">
             <h3 className="text-lg font-medium mb-2">Zusammenfassung</h3>
-            <div className="text-2xl font-semibold flex items-center gap-2">
+            <div className="flex items-center justify-between gap-2">
+              <div className="text-2xl font-semibold flex items-center gap-2">
               <span>{(results.appliedStaffPct*100).toFixed(1)}% Stamm / {(results.appliedHelperPct*100).toFixed(1)}% Aushilfen</span>
               <button
                 type="button"
@@ -890,10 +947,85 @@ export default function App() {
                   <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm.75 5.5a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM11 10h1a1 1 0 011 1v5a1 1 0 11-2 0v-4h-.25a1 1 0 110-2H11z"/>
                 </svg>
                 <span className={`${splitInfoOpen ? 'opacity-100' : 'opacity-0'} absolute bottom-full mb-1 left-1/2 -translate-x-1/2 whitespace-normal break-words rounded bg-gray-800 text-white text-[11px] px-3 py-2 group-hover:opacity-100 pointer-events-none shadow z-50 max-w-[90vw] md:max-w-[22rem] text-center md:text-left`}>
-                  Schutzregel: Die bestbezahlte Aushilfe darf höchstens die Hälfte eines vollen Stamm‑Anteils erhalten.
+                  {splitMode === 'auto'
+                    ? 'Schutzregel: Die bestbezahlte Aushilfe darf höchstens die Hälfte eines vollen Stamm‑Anteils erhalten.'
+                    : 'Manueller Split aktiv. Fairness‑Check wird nicht automatisch angewendet.'}
                 </span>
               </button>
+              </div>
+              <div className="inline-flex items-center rounded-md border border-gray-300 dark:border-gray-700 overflow-hidden">
+                <button
+                  type="button"
+                  className={`px-2.5 py-1.5 text-sm ${splitMode==='auto' ? 'bg-emerald-600 text-white' : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200'}`}
+                  onClick={() => setSplitMode('auto')}
+                  title="Automatische Verteilung"
+                >Auto</button>
+                <button
+                  type="button"
+                  className={`px-2.5 py-1.5 text-sm border-l border-gray-300 dark:border-gray-700 ${splitMode==='manual' ? 'bg-emerald-600 text-white' : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200'}`}
+                  onClick={() => {
+                    // initialize manual value with current auto result when switching
+                    if (splitMode !== 'manual') {
+                      const cur = (results.appliedStaffPct * 100).toFixed(1)
+                      setManualStaffPctInput(cur.replace('.', ','))
+                    }
+                    setSplitMode('manual')
+                  }}
+                  title="Manuell anpassen"
+                >Manuell</button>
+              </div>
             </div>
+            {splitMode === 'manual' && (
+              <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Prozent Stammpersonal</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      value={manualStaffPctInput}
+                      onChange={e => {
+                        const sanitized = sanitizeNumericString(e.target.value, { allowDecimal: true, maxDecimals: 1, mode: 'typing' })
+                        setManualStaffPctInput(sanitized)
+                      }}
+                      onBlur={e => {
+                        const committed = sanitizeNumericString(e.target.value, { allowDecimal: true, clampMin: 0, clampMax: 100, maxDecimals: 1, mode: 'commit' })
+                        setManualStaffPctInput(committed)
+                      }}
+                      className="w-full h-10 rounded-lg border pl-3 pr-10 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring"
+                    />
+                    <span aria-hidden className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-600">%</span>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Prozent Aushilfen</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      value={manualHelperPctDisplay}
+                      onChange={e => {
+                        const sanitized = sanitizeNumericString(e.target.value, { allowDecimal: true, maxDecimals: 1, mode: 'typing' })
+                        // interpret as helper percent; update staff = 100 - helper
+                        const n = Number((sanitized === '' || sanitized === '.' || sanitized === ',') ? '0' : sanitized.replace(',', '.'))
+                        const helper = Math.min(100, Math.max(0, Number.isFinite(n) ? n : 0))
+                        const newStaff = Math.min(100, Math.max(0, Math.round((100 - helper) * 10) / 10))
+                        setManualStaffPctInput(newStaff.toLocaleString('de-DE', { useGrouping: false, maximumFractionDigits: 1 }))
+                      }}
+                      onBlur={e => {
+                        const committed = sanitizeNumericString(e.target.value, { allowDecimal: true, clampMin: 0, clampMax: 100, maxDecimals: 1, mode: 'commit' })
+                        const n = Number((committed === '' || committed === '.' || committed === ',') ? '0' : committed.replace(',', '.'))
+                        const helper = Math.min(100, Math.max(0, Number.isFinite(n) ? n : 0))
+                        const newStaff = Math.min(100, Math.max(0, Math.round((100 - helper) * 10) / 10))
+                        setManualStaffPctInput(newStaff.toLocaleString('de-DE', { useGrouping: false, maximumFractionDigits: 1 }))
+                      }}
+                      className="w-full h-10 rounded-lg border pl-3 pr-10 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring"
+                    />
+                    <span aria-hidden className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-600">%</span>
+                  </div>
+                </div>
+              </div>
+            )}
             <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">Gesamt: <strong>{formatMoney(total)}</strong><br/>Stamm-Topf: <strong>{formatMoney(results.staffPot)}</strong> · Aushilfen-Topf: <strong>{formatMoney(results.helperPot)}</strong></p>
           </div>
 
