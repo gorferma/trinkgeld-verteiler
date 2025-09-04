@@ -381,6 +381,17 @@ export default function App() {
     return helperPct.toLocaleString('de-DE', { useGrouping: false, maximumFractionDigits: 1 })
   }, [manualStaffPctInput])
 
+  const manualStaffPctDisplay = useMemo(() => {
+    const s = manualStaffPctInput
+    const n = Number((s === '' || s === '.' || s === ',') ? '0' : s.replace(',', '.'))
+    const staffPct = Math.max(0, Math.min(100, Number.isFinite(n) ? n : 0))
+    return staffPct.toLocaleString('de-DE', { useGrouping: false, maximumFractionDigits: 1 })
+  }, [manualStaffPctInput])
+
+  const sumW = useMemo(() => staff.reduce((a, s) => a + (isFinite(s.share) ? Math.max(0, s.share) : 0), 0), [staff])
+  const sumH = useMemo(() => helpers.reduce((a, h) => a + (isFinite(h.hours) ? Math.max(0, h.hours) : 0), 0), [helpers])
+  const canManualSplit = sumW > 0 && sumH > 0
+
   // Load state from URL (?s=...) once on mount
   useEffect(() => {
     try {
@@ -976,52 +987,79 @@ export default function App() {
               </div>
             </div>
             {splitMode === 'manual' && (
-              <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="mt-3 space-y-3">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Prozent Stammpersonal</label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      inputMode="decimal"
-                      value={manualStaffPctInput}
-                      onChange={e => {
-                        const sanitized = sanitizeNumericString(e.target.value, { allowDecimal: true, maxDecimals: 1, mode: 'typing' })
-                        setManualStaffPctInput(sanitized)
-                      }}
-                      onBlur={e => {
-                        const committed = sanitizeNumericString(e.target.value, { allowDecimal: true, clampMin: 0, clampMax: 100, maxDecimals: 1, mode: 'commit' })
-                        setManualStaffPctInput(committed)
-                      }}
-                      className="w-full h-10 rounded-lg border pl-3 pr-10 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring"
-                    />
-                    <span aria-hidden className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-600">%</span>
+                  <label className="block text-sm font-medium mb-2">Manueller Split (Slider)</label>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={0.1}
+                    value={manualStaffPctNum * 100}
+                    onChange={e => {
+                      const v = Number(e.target.value)
+                      const clamped = Math.max(0, Math.min(100, Number.isFinite(v) ? v : 0))
+                      setManualStaffPctInput(clamped.toLocaleString('de-DE', { useGrouping: false, maximumFractionDigits: 1 }))
+                    }}
+                    disabled={!canManualSplit}
+                    className={`w-full ${canManualSplit ? '' : 'opacity-60 cursor-not-allowed'}`}
+                    aria-label="Manueller Split: Prozent für Stammpersonal"
+                  />
+                  <div className="flex justify-between text-xs text-gray-600 dark:text-gray-300 mt-1">
+                    <span>Stamm {manualStaffPctDisplay}%</span>
+                    <span>Aushilfen {manualHelperPctDisplay}%</span>
                   </div>
+                  {!canManualSplit && (
+                    <p className="text-xs text-gray-500 mt-1">Aktiv, wenn Stammpersonal und Aushilfen vorhanden sind.</p>
+                  )}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Prozent Aushilfen</label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      inputMode="decimal"
-                      value={manualHelperPctDisplay}
-                      onChange={e => {
-                        const sanitized = sanitizeNumericString(e.target.value, { allowDecimal: true, maxDecimals: 1, mode: 'typing' })
-                        // interpret as helper percent; update staff = 100 - helper
-                        const n = Number((sanitized === '' || sanitized === '.' || sanitized === ',') ? '0' : sanitized.replace(',', '.'))
-                        const helper = Math.min(100, Math.max(0, Number.isFinite(n) ? n : 0))
-                        const newStaff = Math.min(100, Math.max(0, Math.round((100 - helper) * 10) / 10))
-                        setManualStaffPctInput(newStaff.toLocaleString('de-DE', { useGrouping: false, maximumFractionDigits: 1 }))
-                      }}
-                      onBlur={e => {
-                        const committed = sanitizeNumericString(e.target.value, { allowDecimal: true, clampMin: 0, clampMax: 100, maxDecimals: 1, mode: 'commit' })
-                        const n = Number((committed === '' || committed === '.' || committed === ',') ? '0' : committed.replace(',', '.'))
-                        const helper = Math.min(100, Math.max(0, Number.isFinite(n) ? n : 0))
-                        const newStaff = Math.min(100, Math.max(0, Math.round((100 - helper) * 10) / 10))
-                        setManualStaffPctInput(newStaff.toLocaleString('de-DE', { useGrouping: false, maximumFractionDigits: 1 }))
-                      }}
-                      className="w-full h-10 rounded-lg border pl-3 pr-10 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring"
-                    />
-                    <span aria-hidden className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-600">%</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Prozent Stammpersonal</label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        value={manualStaffPctInput}
+                        onChange={e => {
+                          const sanitized = sanitizeNumericString(e.target.value, { allowDecimal: true, maxDecimals: 1, mode: 'typing' })
+                          setManualStaffPctInput(sanitized)
+                        }}
+                        onBlur={e => {
+                          const committed = sanitizeNumericString(e.target.value, { allowDecimal: true, clampMin: 0, clampMax: 100, maxDecimals: 1, mode: 'commit' })
+                          setManualStaffPctInput(committed)
+                        }}
+                        className="w-full h-10 rounded-lg border pl-3 pr-10 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring"
+                      />
+                      <span aria-hidden className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-600">%</span>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Prozent Aushilfen</label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        value={manualHelperPctDisplay}
+                        onChange={e => {
+                          const sanitized = sanitizeNumericString(e.target.value, { allowDecimal: true, maxDecimals: 1, mode: 'typing' })
+                          // interpret as helper percent; update staff = 100 - helper
+                          const n = Number((sanitized === '' || sanitized === '.' || sanitized === ',') ? '0' : sanitized.replace(',', '.'))
+                          const helper = Math.min(100, Math.max(0, Number.isFinite(n) ? n : 0))
+                          const newStaff = Math.min(100, Math.max(0, Math.round((100 - helper) * 10) / 10))
+                          setManualStaffPctInput(newStaff.toLocaleString('de-DE', { useGrouping: false, maximumFractionDigits: 1 }))
+                        }}
+                        onBlur={e => {
+                          const committed = sanitizeNumericString(e.target.value, { allowDecimal: true, clampMin: 0, clampMax: 100, maxDecimals: 1, mode: 'commit' })
+                          const n = Number((committed === '' || committed === '.' || committed === ',') ? '0' : committed.replace(',', '.'))
+                          const helper = Math.min(100, Math.max(0, Number.isFinite(n) ? n : 0))
+                          const newStaff = Math.min(100, Math.max(0, Math.round((100 - helper) * 10) / 10))
+                          setManualStaffPctInput(newStaff.toLocaleString('de-DE', { useGrouping: false, maximumFractionDigits: 1 }))
+                        }}
+                        className="w-full h-10 rounded-lg border pl-3 pr-10 bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 focus-ring"
+                      />
+                      <span aria-hidden className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-600">%</span>
+                    </div>
                   </div>
                 </div>
               </div>
